@@ -1,4 +1,7 @@
-﻿using Terraria;
+﻿using MonoMod.Cil;
+using Mono.Cecil.Cil;
+using System;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace GameAdjustments;
@@ -8,23 +11,61 @@ namespace GameAdjustments;
 /// </summary>
 internal class GlobalNPCAdjustments : GlobalNPC
 {
-    /// <summary>
-    /// 调整防御算法
-    /// </summary>
-    public override void ModifyIncomingHit(NPC npc, ref NPC.HitModifiers modifiers)
+    //private delegate float ApplyDefenseDelegate(ref NPC.HitModifiers modifiers, float damageReduction);
+
+    private static float ApplyCustomDefense(ref NPC.HitModifiers modifiers, float damageReduction)
     {
-        // 记录防御
-        var defense = modifiers.Defense.Base;
+        float defenseScalingConstant = 100f;
+        if (Main.masterMode) defenseScalingConstant = 50f;
+        else if (Main.expertMode) defenseScalingConstant = 75f;
 
-        // 取消护甲
-        modifiers.Defense.Base = 0;
+        float customDamageReduction =
+            damageReduction / (defenseScalingConstant + damageReduction);
 
-        var defenseScalingConstant = 100f;
-        if (Main.masterMode) defenseScalingConstant = 75f;
-        else if (Main.expertMode) defenseScalingConstant = 50f;
+        modifiers.FinalDamage *= 1f - customDamageReduction;
 
-        // 转换为百分比减伤算法
-        var damageReduction = defense / (defenseScalingConstant + defense);
-        modifiers.FinalDamage *= 1 - damageReduction;
+        return 0f;
     }
+
+    public override void Load()
+    {
+        IL_NPC.HitModifiers.GetDamage += (il) =>
+        {
+            var c = new ILCursor(il);
+
+            if (!c.TryGotoNext(
+                    MoveType.After,
+                    instruction => instruction.MatchStloc(3)))
+            {
+                throw new InvalidOperationException(
+                    "无法定位 NPC.HitModifiers.GetDamage 的 damageReduction");
+            }
+
+            c.Emit(OpCodes.Ldarg_0);
+            c.Emit(OpCodes.Ldloc_3);
+            c.EmitDelegate(ApplyCustomDefense);
+            c.Emit(OpCodes.Stloc_3);
+        };
+    }
+
+    /// <summary>
+    /// 旧版实现，已调整为 IL 实现
+    /// </summary>
+    //public override void ModifyIncomingHit(NPC npc, ref NPC.HitModifiers modifiers)
+    //{
+    //    return;
+    //    // 记录防御
+    //    var defense = Math.Max(modifiers.Defense.ApplyTo(0), 0);
+
+    //    // 取消护甲
+    //    modifiers.Defense = new();
+
+    //    var defenseScalingConstant = 100f;
+    //    if (Main.masterMode) defenseScalingConstant = 50f;
+    //    else if (Main.expertMode) defenseScalingConstant = 75f;
+
+    //    // 转换为百分比减伤算法
+    //    var damageReduction = defense / (defenseScalingConstant + defense);
+    //    modifiers.FinalDamage *= 1 - damageReduction;
+    //}
 }
