@@ -19,8 +19,12 @@ internal class GlobalNPCAdjustments : GlobalNPC
         // 取消护甲
         modifiers.Defense.Base = 0;
 
+        var defenseScalingConstant = 100f;
+        if (Main.masterMode) defenseScalingConstant = 75f;
+        else if (Main.expertMode) defenseScalingConstant = 50f;
+
         // 转换为百分比减伤算法
-        var damageReduction = defense / (50 + defense);
+        var damageReduction = defense / (defenseScalingConstant + defense);
         modifiers.FinalDamage *= 1 - damageReduction;
     }
 }

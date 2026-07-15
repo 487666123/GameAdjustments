@@ -1,3 +1,5 @@
-displayName = Game Adjustments
+displayName = Game Adjustments 游戏机制调整
 author = 太阳照常升起
-version = 0.1
+version = 0.1.0
+homepage = https://github.com/487666123/GameAdjustments
+includeSource = true
