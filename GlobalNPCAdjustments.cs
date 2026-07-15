@@ -11,8 +11,6 @@ namespace GameAdjustments;
 /// </summary>
 internal class GlobalNPCAdjustments : GlobalNPC
 {
-    //private delegate float ApplyDefenseDelegate(ref NPC.HitModifiers modifiers, float damageReduction);
-
     private static float ApplyCustomDefense(ref NPC.HitModifiers modifiers, float damageReduction)
     {
         float defenseScalingConstant = 100f;
@@ -29,9 +27,31 @@ internal class GlobalNPCAdjustments : GlobalNPC
 
     public override void Load()
     {
-        IL_NPC.HitModifiers.GetDamage += (il) =>
+        IL_NPC.HitModifiers.GetDamage += static (il) =>
         {
             var c = new ILCursor(il);
+
+            if (!c.TryGotoNext(
+                    MoveType.After,
+                    instruction => instruction.MatchLdloc(2),
+                    instruction => instruction.MatchSub()))
+            {
+                throw new InvalidOperationException(
+                    "无法定位护甲穿透后的防御计算");
+            }
+
+            if (!c.TryGotoNext(
+                    MoveType.Before,
+                    instruction => instruction.MatchLdcR4(0f),
+                    instruction => instruction.MatchCall(
+                        typeof(Math),
+                        nameof(Math.Max))))
+            {
+                throw new InvalidOperationException(
+                    "无法定位防御值的 Math.Max");
+            }
+
+            c.RemoveRange(2);
 
             if (!c.TryGotoNext(
                     MoveType.After,
