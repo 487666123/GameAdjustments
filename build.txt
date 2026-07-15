@@ -1,0 +1,3 @@
+displayName = Game Adjustments
+author = 太阳照常升起
+version = 0.1
