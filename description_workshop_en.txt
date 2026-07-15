@@ -1,0 +1,57 @@
+[h1]Game Adjustments[/h1]
+
+A gameplay mechanics adjustment mod made for entertainment purposes.
+
+[h2]NPC Defense Algorithm[/h2]
+
+This mod changes how defense is calculated for all NPCs. When an NPC takes damage, the mod uses an IL edit to modify `NPC.HitModifiers.GetDamage`, converts the defense reduction calculated by vanilla into percentage-based damage reduction with diminishing returns, and applies it to `FinalDamage`. The original flat damage reduction is then set to 0 to prevent it from being applied twice.
+
+[code]
+Damage reduction = Vanilla defense reduction / (Defense scaling constant + Vanilla defense reduction)
+Final damage multiplier = Defense scaling constant / (Defense scaling constant + Vanilla defense reduction)
+[/code]
+
+[h2]Defense Effects by Difficulty[/h2]
+
+The defense scaling constant changes with the game difficulty. A lower constant provides greater damage reduction for the same vanilla defense reduction value.
+
+[table]
+[tr]
+[th]Difficulty[/th]
+[th]Defense scaling constant[/th]
+[/tr]
+[tr]
+[td]Normal Mode[/td]
+[td]100[/td]
+[/tr]
+[tr]
+[td]Expert Mode[/td]
+[td]75[/td]
+[/tr]
+[tr]
+[td]Master Mode[/td]
+[td]50[/td]
+[/tr]
+[/table]
+
+When the vanilla-calculated defense reduction value is 50, with no other damage modifiers:
+
+[list]
+[*]Normal Mode: 33.33% damage reduction, takes 66.67% damage
+[*]Expert Mode: 40% damage reduction, takes 60% damage
+[*]Master Mode: 50% damage reduction, takes 50% damage
+[/list]
+
+[h2]Features[/h2]
+
+[list]
+[*]Higher vanilla defense reduction values provide greater damage reduction to NPCs
+[*]The benefit of each additional point of defense reduction gradually decreases
+[*]Under normal circumstances, defense will not provide 100% damage reduction
+[*]Applies to all vanilla NPCs
+[*]Also applies to NPCs added by other mods
+[/list]
+
+[quote]
+This mod is intended for entertainment and may significantly alter the combat balance of vanilla Terraria or other mods.
+[/quote]
