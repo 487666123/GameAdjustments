@@ -59,6 +59,41 @@ The formula has a zero denominator when the vanilla defense reduction value is e
 [*]Also applies to NPCs added by other mods
 [/list]
 
+[h2]Prefix Enhancements[/h2]
+
+Some accessory prefixes provide additional generic armor penetration. The effect is applied automatically while the accessory is equipped, and a green `+N armor penetration` line is displayed after the prefix tooltip line.
+
+[table]
+[tr]
+[th]Prefix[/th]
+[th]Additional armor penetration[/th]
+[/tr]
+[tr]
+[td]Precise[/td]
+[td]6[/td]
+[/tr]
+[tr]
+[td]Lucky[/td]
+[td]10[/td]
+[/tr]
+[tr]
+[td]Jagged[/td]
+[td]2[/td]
+[/tr]
+[tr]
+[td]Spiked[/td]
+[td]4[/td]
+[/tr]
+[tr]
+[td]Angry[/td]
+[td]6[/td]
+[/tr]
+[tr]
+[td]Menacing[/td]
+[td]8[/td]
+[/tr]
+[/table]
+
 [quote]
 This mod is intended for entertainment and may significantly alter the combat balance of vanilla Terraria or other mods.
 [/quote]

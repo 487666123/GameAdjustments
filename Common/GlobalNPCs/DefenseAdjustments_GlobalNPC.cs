@@ -4,12 +4,12 @@ using System;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace GameAdjustments;
+namespace GameAdjustments.Common.GlobalNPCs;
 
 /// <summary>
 /// 调整游戏中所有 NPC 的防御生效方式
 /// </summary>
-internal class GlobalNPCAdjustments : GlobalNPC
+internal class DefenseAdjustments_GlobalNPC : GlobalNPC
 {
     private static float ApplyCustomDefense(ref NPC.HitModifiers modifiers, float damageReduction)
     {
