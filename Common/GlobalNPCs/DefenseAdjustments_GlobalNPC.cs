@@ -49,7 +49,13 @@ internal class DefenseAdjustments_GlobalNPC : GlobalNPC
 
     public override void Load()
     {
-        IL_NPC.HitModifiers.GetDamage += static (il) =>
+        var defenseNotFound = Mod.GetLocalization("Errors.DefenseNotFound");
+        var armorPenetrationDefenseCalculationNotFound =
+            Mod.GetLocalization("Errors.ArmorPenetrationDefenseCalculationNotFound");
+        var defenseMathMaxNotFound = Mod.GetLocalization("Errors.DefenseMathMaxNotFound");
+        var damageReductionNotFound = Mod.GetLocalization("Errors.DamageReductionNotFound");
+
+        IL_NPC.HitModifiers.GetDamage += (il) =>
         {
             var c = new ILCursor(il);
 
@@ -59,7 +65,7 @@ internal class DefenseAdjustments_GlobalNPC : GlobalNPC
                 instruction => instruction.MatchLdfld(typeof(NPC.HitModifiers), nameof(NPC.HitModifiers.Defense))))
             {
                 throw new InvalidOperationException(
-                    "无法定位 NPC.HitModifiers.Defense");
+                    defenseNotFound.Value);
             }
 
             c.Emit(OpCodes.Ldarg_0);
@@ -71,7 +77,7 @@ internal class DefenseAdjustments_GlobalNPC : GlobalNPC
                     instruction => instruction.MatchSub()))
             {
                 throw new InvalidOperationException(
-                    "无法定位护甲穿透后的防御计算");
+                    armorPenetrationDefenseCalculationNotFound.Value);
             }
 
             if (!c.TryGotoNext(
@@ -82,7 +88,7 @@ internal class DefenseAdjustments_GlobalNPC : GlobalNPC
                         nameof(Math.Max))))
             {
                 throw new InvalidOperationException(
-                    "无法定位防御值的 Math.Max");
+                    defenseMathMaxNotFound.Value);
             }
 
             c.RemoveRange(2);
@@ -92,7 +98,7 @@ internal class DefenseAdjustments_GlobalNPC : GlobalNPC
                     instruction => instruction.MatchStloc(3)))
             {
                 throw new InvalidOperationException(
-                    "无法定位 NPC.HitModifiers.GetDamage 的 damageReduction");
+                    damageReductionNotFound.Value);
             }
 
             c.Emit(OpCodes.Ldarg_0);

@@ -1,0 +1,9 @@
+DisplayName: 游戏机制调整
+Common.ArmorPenetration: +{0} 穿甲
+
+Errors: {
+	DefenseNotFound: 无法定位 NPC.HitModifiers.Defense
+	ArmorPenetrationDefenseCalculationNotFound: 无法定位护甲穿透后的防御计算
+	DefenseMathMaxNotFound: 无法定位防御值的 Math.Max
+	DamageReductionNotFound: 无法定位 NPC.HitModifiers.GetDamage 的 damageReduction
+}

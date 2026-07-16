@@ -1,1 +1,9 @@
+DisplayName: Game Adjustments
+Common.ArmorPenetration: +{0} armor penetration
 
+Errors: {
+	DefenseNotFound: Failed to locate NPC.HitModifiers.Defense
+	ArmorPenetrationDefenseCalculationNotFound: Failed to locate the defense calculation after armor penetration
+	DefenseMathMaxNotFound: Failed to locate Math.Max for the defense value
+	DamageReductionNotFound: Failed to locate damageReduction in NPC.HitModifiers.GetDamage
+}

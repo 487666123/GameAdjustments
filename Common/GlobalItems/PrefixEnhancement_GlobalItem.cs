@@ -38,7 +38,10 @@ internal class PrefixEnhancement_GlobalItem : GlobalItem
 
         if (prefixIndex < 0) return;
 
-        tooltips.Insert(prefixIndex + 1, new TooltipLine(Mod, "PrefixDamage", $"+{penetration} 穿甲")
+        tooltips.Insert(prefixIndex + 1, new TooltipLine(
+            Mod,
+            "PrefixDamage",
+            Mod.GetLocalization("Common.ArmorPenetration").Format(penetration))
         {
             OverrideColor = new Color(120, 190, 120)
         });
