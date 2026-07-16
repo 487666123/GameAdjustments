@@ -14,15 +14,37 @@ internal class DefenseAdjustments_GlobalNPC : GlobalNPC
     private static float ApplyCustomDefense(ref NPC.HitModifiers modifiers, float damageReduction)
     {
         float defenseScalingConstant = 100f;
-        if (Main.masterMode) defenseScalingConstant = 50f;
-        else if (Main.expertMode) defenseScalingConstant = 75f;
+
+        if (Main.masterMode)
+        {
+            defenseScalingConstant = 50f;
+        }
+        else if (Main.expertMode)
+        {
+            defenseScalingConstant = 75f;
+        }
 
         float customDamageReduction =
-            damageReduction / (defenseScalingConstant + damageReduction);
+            damageReduction / (defenseScalingConstant + MathF.Abs(damageReduction));
 
         modifiers.FinalDamage *= 1f - customDamageReduction;
 
         return 0f;
+    }
+
+    // 防御加强
+    private static void ModifyDefanse(ref NPC.HitModifiers modifiers)
+    {
+        if (Main.masterMode)
+        {
+            modifiers.Defense.Base += 20;
+            modifiers.Defense *= 1.5f;
+        }
+        else if (Main.expertMode)
+        {
+            modifiers.Defense.Base += 10;
+            modifiers.Defense *= 1.25f;
+        }
     }
 
     public override void Load()
@@ -30,6 +52,18 @@ internal class DefenseAdjustments_GlobalNPC : GlobalNPC
         IL_NPC.HitModifiers.GetDamage += static (il) =>
         {
             var c = new ILCursor(il);
+
+            if (!c.TryGotoNext(
+                MoveType.Before,
+                instruction => instruction.MatchLdarg(0),
+                instruction => instruction.MatchLdfld(typeof(NPC.HitModifiers), nameof(NPC.HitModifiers.Defense))))
+            {
+                throw new InvalidOperationException(
+                    "无法定位 NPC.HitModifiers.Defense");
+            }
+
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate(ModifyDefanse);
 
             if (!c.TryGotoNext(
                     MoveType.After,

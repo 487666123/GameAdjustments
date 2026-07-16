@@ -2,39 +2,47 @@
 
 A gameplay mechanics adjustment mod made for entertainment purposes.
 
+[h2]Damage Variation[/h2]
+
+This mod disables vanilla damage variation. Damage calculation directly rounds the incoming damage value and no longer uses the variation percentage or luck parameters, making attacks deal consistent damage under the same conditions.
+
 [h2]NPC Defense Algorithm[/h2]
 
 This mod changes how defense is calculated for all NPCs. Through an IL edit to `NPC.HitModifiers.GetDamage`, it removes the minimum value of 0 applied to defense after armor penetration, allowing excess armor penetration to produce a negative vanilla defense reduction value. This value is then converted into a percentage modifier with diminishing returns and applied to `FinalDamage`. The original flat damage reduction is set to 0 afterward to prevent it from being applied twice.
 
 [code]
-Damage reduction = Vanilla defense reduction / (Defense scaling constant + Vanilla defense reduction)
-Final damage multiplier = Defense scaling constant / (Defense scaling constant + Vanilla defense reduction)
+Damage reduction = Vanilla defense reduction / (Defense scaling constant + |Vanilla defense reduction|)
+Final damage multiplier = 1 - Damage reduction
 [/code]
 
 [h2]Defense Effects by Difficulty[/h2]
 
-The defense scaling constant changes with the game difficulty. A lower constant provides greater damage reduction for the same vanilla defense reduction value.
+NPC defense and the defense scaling constant change with game difficulty. A lower constant provides greater damage reduction for the same vanilla defense reduction value.
 
 [table]
 [tr]
 [th]Difficulty[/th]
+[th]NPC defense adjustment[/th]
 [th]Defense scaling constant[/th]
 [/tr]
 [tr]
 [td]Normal Mode[/td]
+[td]Unchanged[/td]
 [td]100[/td]
 [/tr]
 [tr]
 [td]Expert Mode[/td]
+[td]Base +10, then total ×1.25[/td]
 [td]75[/td]
 [/tr]
 [tr]
 [td]Master Mode[/td]
+[td]Base +20, then total ×1.5[/td]
 [td]50[/td]
 [/tr]
 [/table]
 
-When the vanilla-calculated defense reduction value is 50, with no other damage modifiers:
+When the vanilla-calculated defense reduction value is 50 after the difficulty-based defense adjustment, with no other damage modifiers:
 
 [list]
 [*]Normal Mode: 33.33% damage reduction, takes 66.67% damage
@@ -42,11 +50,7 @@ When the vanilla-calculated defense reduction value is 50, with no other damage 
 [*]Master Mode: 50% damage reduction, takes 50% damage
 [/list]
 
-When armor penetration exceeds an NPC's effective defense, the vanilla defense reduction value becomes negative. This produces a final damage multiplier greater than 1, allowing excess armor penetration to continue increasing damage instead of losing its effect once defense reaches 0.
-
-[quote]
-The formula has a zero denominator when the vanilla defense reduction value is equal to the negative defense scaling constant. Values beyond that point may also produce abnormal damage multipliers. Normal gameplay values are unlikely to reach this boundary, but content that grants extremely high armor penetration may trigger it.
-[/quote]
+When armor penetration exceeds an NPC's effective defense, the vanilla defense reduction value becomes negative. This produces a final damage multiplier greater than 1, allowing excess armor penetration to continue increasing damage instead of losing its effect once defense reaches 0. Because the denominator uses the absolute value of the defense reduction, it always remains positive. As the magnitude of a negative defense reduction increases, the final damage multiplier gradually approaches 2.
 
 [h2]Features[/h2]
 
@@ -54,6 +58,7 @@ The formula has a zero denominator when the vanilla defense reduction value is e
 [*]Higher vanilla defense reduction values provide greater damage reduction to NPCs
 [*]The benefit of each additional point of defense reduction gradually decreases
 [*]Under normal circumstances, defense will not provide 100% damage reduction
+[*]Expert and Master Mode further increase NPC defense
 [*]Excess armor penetration can reduce effective defense below 0 and increase final damage
 [*]Applies to all vanilla NPCs
 [*]Also applies to NPCs added by other mods
